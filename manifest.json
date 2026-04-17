@@ -2,8 +2,8 @@
   "name": "Daily Expense Tracker",
   "short_name": "Expense",
   "display": "standalone",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "https://tomminghk.github.io/DailyExpenseTracker/",
+  "scope": "https://tomminghk.github.io/DailyExpenseTracker/",
   "background_color": "#ffffff",
   "theme_color": "#000000",
   "icons": [
