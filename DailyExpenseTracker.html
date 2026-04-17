@@ -31,6 +31,16 @@
     :root { --sat: env(safe-area-inset-top); --sab: env(safe-area-inset-bottom); }
     body { overscroll-behavior-y: none; margin: 0; padding: 0; background-color: #f3f4f6; }
   </style>
+
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Tells iOS Safari to run in full-screen app mode -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Tells Android Chrome to run in full-screen app mode -->
+  <meta name="mobile-web-app-capable" content="yes">
+  
 </head>
 <body>
   <div id="root"></div>
