@@ -1,5 +1,9 @@
-// A minimal service worker to satisfy Chrome's PWA install requirement
+// sw.js
 self.addEventListener('fetch', function(event) {
-    // We don't need to do anything here right now, 
-    // just having this listener makes Chrome happy!
+    // Simply fetch the requested resource, and if it fails (offline), return a basic response.
+    event.respondWith(
+        fetch(event.request).catch(function() {
+            return new Response('Offline mode');
+        })
+    );
 });
