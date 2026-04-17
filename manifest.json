@@ -1,0 +1,8 @@
+{
+  "name": "Daily Expense Tracker",
+  "short_name": "DET",
+  "display": "standalone",
+  "start_url": ".",
+  "background_color": "#ffffff",
+  "theme_color": "#000000"
+}
