@@ -1,25 +1,18 @@
-<!DOCTYPE html><html><head><meta name="x-poe-datastore-behavior" content="local_only"><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;"><meta http-equiv="x-dns-prefetch-control" content="off"><script src="https://puc.poecdn.net/authenticated_preview_page/standard.3ef2c256959faf5a756d.js"></script>
-    <meta charset="utf-8">
-    <title>Poe</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-  <script src="https://puc.poecdn.net/authenticated_preview_page/disableWebRTC.9710cebe07429a9e8e06.js"></script><meta name="x-poe-allow-downloads" content="true"><meta name="x-poe-datastore-behavior" content="disabled"><script src="https://puc.poecdn.net/authenticated_preview_page/tw.50ec1b0612bf5b0c30a5.js"></script><script src="https://puc.poecdn.net/authenticated_preview_page/deps.faccd16000d314dc16d5.js"></script><script src="https://puc.poecdn.net/authenticated_preview_page/exports.b0f0f482cdeb5302b0b9.js"></script><script src="https://puc.poecdn.net/authenticated_preview_page/renderer.75c73ae6b4235f62945a.js"></script><script>Object.defineProperty(exports, "__esModule", {value: true}); function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }var _react = require('react'); var _react2 = _interopRequireDefault(_react);
-var _lucidereact = require('lucide-react');
-
-
-
-var _recharts = require('recharts');
+import React, { useState, useEffect, useMemo } from 'react';
+import { PlusCircle, PieChart, Database, Settings, Delete, Trash2, Download, Upload, AlertCircle, Plus } from 'lucide-react';
+import { ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell, Tooltip, Legend, BarChart, CartesianGrid, XAxis, YAxis, Bar } from 'recharts';
 
 const DEFAULT_CATEGORIES = ['Food', 'Transport', 'Housing', 'Utilities', 'Entertainment', 'Health', 'Shopping', 'Other'];
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#E06666', '#93C47D', '#76A5AF', '#D5A6BD', '#9FC5E8'];
 
- function ExpenseTracker() {
-  const [activeTab, setActiveTab] = _react.useState.call(void 0, 'add');
-  const [expenses, setExpenses] = _react.useState.call(void 0, []);
-  const [categories, setCategories] = _react.useState.call(void 0, DEFAULT_CATEGORIES);
-  const [isLoaded, setIsLoaded] = _react.useState.call(void 0, false);
+export default function ExpenseTracker() {
+  const [activeTab, setActiveTab] = useState('add');
+  const [expenses, setExpenses] = useState([]);
+  const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+  const [isLoaded, setIsLoaded] = useState(false);
   
   // Load from local storage on mount
-  _react.useEffect.call(void 0, () => {
+  useEffect(() => {
     try {
       const savedExpenses = localStorage.getItem('expense_tracker_data');
       if (savedExpenses) {
@@ -37,7 +30,7 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#E06666'
   }, []);
 
   // Save expenses to local storage on change
-  _react.useEffect.call(void 0, () => {
+  useEffect(() => {
     if (!isLoaded) return;
     try {
       localStorage.setItem('expense_tracker_data', JSON.stringify(expenses));
@@ -47,7 +40,7 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#E06666'
   }, [expenses, isLoaded]);
 
   // Save categories to local storage on change
-  _react.useEffect.call(void 0, () => {
+  useEffect(() => {
     if (!isLoaded) return;
     try {
       localStorage.setItem('expense_tracker_categories', JSON.stringify(categories));
@@ -58,13 +51,13 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#E06666'
 
   const addExpense = (expense) => {
     setExpenses([...expenses, { ...expense, id: Date.now().toString() + Math.random().toString(36).substr(2, 9) }]);
+    // Use a less intrusive notification than alert if preferred, but keeping alert as requested by original code behavior
     alert('Expense added successfully!');
   };
 
   const importExpenses = (newExpenses) => {
     setExpenses([...expenses, ...newExpenses]);
     
-    // Automatically add new categories found in the import
     const newCategories = new Set(categories);
     let addedCategories = false;
     newExpenses.forEach(e => {
@@ -107,63 +100,57 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#E06666'
   if (!isLoaded) return null;
 
   return (
-    _react2.default.createElement('div', { className: "min-h-screen bg-gray-100 flex flex-col font-sans text-gray-800"     ,}
-      /* Header */
-      , _react2.default.createElement('header', { className: "bg-blue-600 text-white p-4 shadow-md z-10"    ,}
-        , _react2.default.createElement('h1', { className: "text-xl font-bold text-center"  ,}, "Daily Expense Tracker"  )
-      )
+    <div className="h-screen w-full bg-gray-100 flex flex-col font-sans text-gray-800 overflow-hidden">
+      {/* PWA Meta Tags (Injected for native feel if run outside sandbox) */}
+      <style>{`
+        :root { --sat: env(safe-area-inset-top); --sab: env(safe-area-inset-bottom); }
+        body { overscroll-behavior-y: none; /* Prevents pull-to-refresh */ }
+      `}</style>
+      
+      {/* Header */}
+      <header className="bg-blue-600 text-white p-3 shadow-md z-10 flex-shrink-0 pt-[max(0.75rem,env(safe-area-inset-top))]">
+        <h1 className="text-lg font-bold text-center">Daily Expense Tracker</h1>
+      </header>
 
-      /* Main Content */
-      , _react2.default.createElement('main', { className: "flex-1 overflow-y-auto p-4 pb-24 max-w-md mx-auto w-full"      ,}
-        , activeTab === 'add' && _react2.default.createElement(AddExpenseView, { onAdd: addExpense, categories: categories,} )
-        , activeTab === 'reports' && _react2.default.createElement(ReportsView, { expenses: expenses, onDelete: deleteExpense,} )
-        , activeTab === 'data' && _react2.default.createElement(DataView, { expenses: expenses, onImport: importExpenses,} )
-        , activeTab === 'settings' && _react2.default.createElement(SettingsView, { categories: categories, onAddCategory: addCategory, onDeleteCategory: deleteCategory,} )
-      )
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto p-3 pb-20 max-w-md mx-auto w-full flex flex-col">
+        {activeTab === 'add' && <AddExpenseView onAdd={addExpense} categories={categories} />}
+        {activeTab === 'reports' && <ReportsView expenses={expenses} onDelete={deleteExpense} />}
+        {activeTab === 'data' && <DataView expenses={expenses} onImport={importExpenses} />}
+        {activeTab === 'settings' && <SettingsView categories={categories} onAddCategory={addCategory} onDeleteCategory={deleteCategory} />}
+      </main>
 
-      /* Bottom Navigation */
-      , _react2.default.createElement('nav', { className: "bg-white border-t border-gray-200 fixed bottom-0 w-full max-w-md left-1/2 -translate-x-1/2 flex justify-around p-2 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] z-10"             ,}
-        , _react2.default.createElement('button', { 
-          onClick: () => setActiveTab('add'), 
-          className: `flex flex-col items-center p-2 rounded-lg ${activeTab === 'add' ? 'text-blue-600' : 'text-gray-500'}`,}
-
-          , _react2.default.createElement(_lucidereact.PlusCircle, { size: 22,} )
-          , _react2.default.createElement('span', { className: "text-[10px] mt-1 font-medium"  ,}, "Add")
-        )
-        , _react2.default.createElement('button', { 
-          onClick: () => setActiveTab('reports'), 
-          className: `flex flex-col items-center p-2 rounded-lg ${activeTab === 'reports' ? 'text-blue-600' : 'text-gray-500'}`,}
-
-          , _react2.default.createElement(_lucidereact.PieChart, { size: 22,} )
-          , _react2.default.createElement('span', { className: "text-[10px] mt-1 font-medium"  ,}, "Reports")
-        )
-        , _react2.default.createElement('button', { 
-          onClick: () => setActiveTab('data'), 
-          className: `flex flex-col items-center p-2 rounded-lg ${activeTab === 'data' ? 'text-blue-600' : 'text-gray-500'}`,}
-
-          , _react2.default.createElement(_lucidereact.Database, { size: 22,} )
-          , _react2.default.createElement('span', { className: "text-[10px] mt-1 font-medium"  ,}, "Data")
-        )
-        , _react2.default.createElement('button', { 
-          onClick: () => setActiveTab('settings'), 
-          className: `flex flex-col items-center p-2 rounded-lg ${activeTab === 'settings' ? 'text-blue-600' : 'text-gray-500'}`,}
-
-          , _react2.default.createElement(_lucidereact.Settings, { size: 22,} )
-          , _react2.default.createElement('span', { className: "text-[10px] mt-1 font-medium"  ,}, "Settings")
-        )
-      )
-    )
+      {/* Bottom Navigation */}
+      <nav className="bg-white border-t border-gray-200 fixed bottom-0 w-full max-w-md left-1/2 -translate-x-1/2 flex justify-around p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-2px_10px_rgba(0,0,0,0.05)] z-10">
+        <button onClick={() => setActiveTab('add')} className={`flex flex-col items-center p-1 rounded-lg ${activeTab === 'add' ? 'text-blue-600' : 'text-gray-500'}`}>
+          <PlusCircle size={22} />
+          <span className="text-[10px] mt-1 font-medium">Add</span>
+        </button>
+        <button onClick={() => setActiveTab('reports')} className={`flex flex-col items-center p-1 rounded-lg ${activeTab === 'reports' ? 'text-blue-600' : 'text-gray-500'}`}>
+          <PieChart size={22} />
+          <span className="text-[10px] mt-1 font-medium">Reports</span>
+        </button>
+        <button onClick={() => setActiveTab('data')} className={`flex flex-col items-center p-1 rounded-lg ${activeTab === 'data' ? 'text-blue-600' : 'text-gray-500'}`}>
+          <Database size={22} />
+          <span className="text-[10px] mt-1 font-medium">Data</span>
+        </button>
+        <button onClick={() => setActiveTab('settings')} className={`flex flex-col items-center p-1 rounded-lg ${activeTab === 'settings' ? 'text-blue-600' : 'text-gray-500'}`}>
+          <Settings size={22} />
+          <span className="text-[10px] mt-1 font-medium">Settings</span>
+        </button>
+      </nav>
+    </div>
   );
-} exports.default = ExpenseTracker;
+}
 
 // --- ADD EXPENSE VIEW ---
 function AddExpenseView({ onAdd, categories }) {
-  const [date, setDate] = _react.useState.call(void 0, new Date().toISOString().split('T')[0]);
-  const [category, setCategory] = _react.useState.call(void 0, categories[0] || '');
-  const [description, setDescription] = _react.useState.call(void 0, '');
-  const [amountStr, setAmountStr] = _react.useState.call(void 0, '0');
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [category, setCategory] = useState(categories[0] || '');
+  const [description, setDescription] = useState('');
+  const [amountStr, setAmountStr] = useState('0');
 
-  _react.useEffect.call(void 0, () => {
+  useEffect(() => {
     if (!categories.includes(category) && categories.length > 0) {
       setCategory(categories[0]);
     }
@@ -197,80 +184,83 @@ function AddExpenseView({ onAdd, categories }) {
   };
 
   return (
-    _react2.default.createElement('div', { className: "space-y-4",}
-      , _react2.default.createElement('div', { className: "bg-white p-4 rounded-xl shadow-sm space-y-3"    ,}
-        , _react2.default.createElement('div', null
-          , _react2.default.createElement('label', { className: "block text-sm font-medium text-gray-700 mb-1"    ,}, "Date")
-          , _react2.default.createElement('input', { 
-            type: "date", 
-            value: date, 
-            onChange: (e) => setDate(e.target.value),
-            className: "w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"       ,}
-          )
-        )
+    <div className="flex flex-col h-full space-y-3">
+      {/* Form Section - More compact */}
+      <div className="bg-white p-3 rounded-xl shadow-sm space-y-3 flex-shrink-0">
+        <div className="flex space-x-3">
+          <div className="flex-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">Date</label>
+            <input 
+              type="date" 
+              value={date} 
+              onChange={(e) => setDate(e.target.value)}
+              className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" 
+            />
+          </div>
+          <div className="flex-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">Category</label>
+            <select 
+              value={category} 
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            >
+              {categories.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+        </div>
 
-        , _react2.default.createElement('div', null
-          , _react2.default.createElement('label', { className: "block text-sm font-medium text-gray-700 mb-1"    ,}, "Category")
-          , _react2.default.createElement('select', { 
-            value: category, 
-            onChange: (e) => setCategory(e.target.value),
-            className: "w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"       ,}
+        <div>
+          <label className="block text-xs font-medium text-gray-700 mb-1">Description</label>
+          <input 
+            type="text" 
+            placeholder="What was this for?" 
+            value={description} 
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" 
+          />
+        </div>
+      </div>
 
-            , categories.map(c => _react2.default.createElement('option', { key: c, value: c,}, c))
-          )
-        )
+      {/* Keypad Section - Flexes to fill remaining space */}
+      <div className="bg-white p-3 rounded-xl shadow-sm flex-1 flex flex-col min-h-[300px]">
+        <div className="text-right mb-2 border-b pb-2 flex-shrink-0">
+          <span className="text-gray-500 mr-1 text-lg">$</span>
+          <span className="text-4xl font-bold text-gray-800 truncate">{amountStr}</span>
+        </div>
 
-        , _react2.default.createElement('div', null
-          , _react2.default.createElement('label', { className: "block text-sm font-medium text-gray-700 mb-1"    ,}, "Description")
-          , _react2.default.createElement('input', { 
-            type: "text", 
-            placeholder: "What was this for?"   , 
-            value: description, 
-            onChange: (e) => setDescription(e.target.value),
-            className: "w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"       ,}
-          )
-        )
-      )
-
-      , _react2.default.createElement('div', { className: "bg-white p-4 rounded-xl shadow-sm"   ,}
-        , _react2.default.createElement('div', { className: "text-right mb-4 border-b pb-2"   ,}
-          , _react2.default.createElement('span', { className: "text-gray-500 mr-2 text-xl"  ,}, "$")
-          , _react2.default.createElement('span', { className: "text-4xl font-bold text-gray-800"  ,}, amountStr)
-        )
-
-        , _react2.default.createElement('div', { className: "grid grid-cols-3 gap-2"  ,}
-          , ['1','2','3','4','5','6','7','8','9','.', '0', 'DEL'].map((key) => (
-            _react2.default.createElement('button', {
-              key: key,
-              onClick: () => handleKeypad(key),
-              className: "bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-xl font-semibold py-4 rounded-lg flex items-center justify-center transition-colors"          ,}
-
-              , key === 'DEL' ? _react2.default.createElement(_lucidereact.Delete, { size: 24,} ) : key
-            )
-          ))
-          , _react2.default.createElement('button', { 
-            onClick: () => handleKeypad('C'),
-            className: "col-span-1 bg-red-100 text-red-600 hover:bg-red-200 active:bg-red-300 text-lg font-semibold py-4 rounded-lg transition-colors"         ,}
-, "Clear"
-
-          )
-          , _react2.default.createElement('button', { 
-            onClick: handleSave,
-            className: "col-span-2 bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 text-lg font-semibold py-4 rounded-lg transition-colors"         ,}
-, "Save Expense"
-
-          )
-        )
-      )
-    )
+        <div className="grid grid-cols-3 gap-2 flex-1">
+          {['1','2','3','4','5','6','7','8','9','.', '0', 'DEL'].map((key) => (
+            <button
+              key={key}
+              onClick={() => handleKeypad(key)}
+              className="bg-gray-50 hover:bg-gray-200 active:bg-gray-300 text-xl font-semibold rounded-lg flex items-center justify-center transition-colors h-full min-h-[40px]"
+            >
+              {key === 'DEL' ? <Delete size={22} /> : key}
+            </button>
+          ))}
+          <button 
+            onClick={() => handleKeypad('C')}
+            className="col-span-1 bg-red-50 text-red-600 hover:bg-red-100 active:bg-red-200 text-lg font-semibold rounded-lg transition-colors h-full min-h-[40px]"
+          >
+            Clear
+          </button>
+          <button 
+            onClick={handleSave}
+            className="col-span-2 bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 text-lg font-semibold rounded-lg transition-colors h-full min-h-[40px]"
+          >
+            Save Expense
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
 // --- REPORTS VIEW ---
 function ReportsView({ expenses, onDelete }) {
-  const [reportType, setReportType] = _react.useState.call(void 0, 'category'); // category, daily, monthly
+  const [reportType, setReportType] = useState('category'); // category, daily, monthly
 
-  const categoryData = _react.useMemo.call(void 0, () => {
+  const categoryData = useMemo(() => {
     const totals = {};
     expenses.forEach(e => {
       totals[e.category] = (totals[e.category] || 0) + e.amount;
@@ -278,7 +268,7 @@ function ReportsView({ expenses, onDelete }) {
     return Object.keys(totals).map(name => ({ name, value: totals[name] })).sort((a,b) => b.value - a.value);
   }, [expenses]);
 
-  const timeData = _react.useMemo.call(void 0, () => {
+  const timeData = useMemo(() => {
     const totals = {};
     expenses.forEach(e => {
       const key = reportType === 'monthly' ? e.date.substring(0, 7) : e.date;
@@ -290,104 +280,104 @@ function ReportsView({ expenses, onDelete }) {
   const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0);
 
   return (
-    _react2.default.createElement('div', { className: "space-y-4",}
-      , _react2.default.createElement('div', { className: "bg-white p-4 rounded-xl shadow-sm text-center"    ,}
-        , _react2.default.createElement('h2', { className: "text-sm text-gray-500 font-medium"  ,}, "Total Expenses" )
-        , _react2.default.createElement('p', { className: "text-3xl font-bold text-blue-600"  ,}, "$", totalSpent.toFixed(2))
-      )
+    <div className="space-y-4">
+      <div className="bg-white p-4 rounded-xl shadow-sm text-center">
+        <h2 className="text-sm text-gray-500 font-medium">Total Expenses</h2>
+        <p className="text-3xl font-bold text-blue-600">${totalSpent.toFixed(2)}</p>
+      </div>
 
-      , _react2.default.createElement('div', { className: "bg-white p-4 rounded-xl shadow-sm"   ,}
-        , _react2.default.createElement('div', { className: "flex space-x-2 mb-4 bg-gray-100 p-1 rounded-lg"     ,}
-          , ['category', 'daily', 'monthly'].map(type => (
-            _react2.default.createElement('button', {
-              key: type,
-              onClick: () => setReportType(type),
-              className: `flex-1 py-1.5 text-sm font-medium rounded-md capitalize transition-colors ${reportType === type ? 'bg-white shadow text-blue-600' : 'text-gray-600'}`,}
+      <div className="bg-white p-4 rounded-xl shadow-sm">
+        <div className="flex space-x-2 mb-4 bg-gray-100 p-1 rounded-lg">
+          {['category', 'daily', 'monthly'].map(type => (
+            <button
+              key={type}
+              onClick={() => setReportType(type)}
+              className={`flex-1 py-1.5 text-sm font-medium rounded-md capitalize transition-colors ${reportType === type ? 'bg-white shadow text-blue-600' : 'text-gray-600'}`}
+            >
+              {type}
+            </button>
+          ))}
+        </div>
 
-              , type
-            )
-          ))
-        )
-
-        , _react2.default.createElement('div', { className: "h-64 w-full" ,}
-          , expenses.length === 0 ? (
-            _react2.default.createElement('div', { className: "h-full flex items-center justify-center text-gray-400"    ,}, "No data available"  )
+        <div className="h-64 w-full">
+          {expenses.length === 0 ? (
+            <div className="h-full flex items-center justify-center text-gray-400">No data available</div>
           ) : reportType === 'category' ? (
-            _react2.default.createElement(_recharts.ResponsiveContainer, { width: "100%", height: "100%",}
-              , _react2.default.createElement(_recharts.PieChart, null
-                , _react2.default.createElement(_recharts.Pie, { data: categoryData, cx: "50%", cy: "50%", innerRadius: 60, outerRadius: 80, paddingAngle: 5, dataKey: "value",}
-                  , categoryData.map((entry, index) => (
-                    _react2.default.createElement(_recharts.Cell, { key: `cell-${index}`, fill: COLORS[index % COLORS.length],} )
-                  ))
-                )
-                , _react2.default.createElement(_recharts.Tooltip, { formatter: (value) => `$${value.toFixed(2)}`,} )
-                , _react2.default.createElement(_recharts.Legend, null )
-              )
-            )
+            <ResponsiveContainer width="100%" height="100%">
+              <RechartsPieChart>
+                <Pie data={categoryData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                  {categoryData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+                <Legend />
+              </RechartsPieChart>
+            </ResponsiveContainer>
           ) : (
-            _react2.default.createElement(_recharts.ResponsiveContainer, { width: "100%", height: "100%",}
-              , _react2.default.createElement(_recharts.BarChart, { data: timeData,}
-                , _react2.default.createElement(_recharts.CartesianGrid, { strokeDasharray: "3 3" , vertical: false,} )
-                , _react2.default.createElement(_recharts.XAxis, { dataKey: "date", tick: {fontSize: 12},} )
-                , _react2.default.createElement(_recharts.YAxis, { tick: {fontSize: 12}, width: 40,} )
-                , _react2.default.createElement(_recharts.Tooltip, { formatter: (value) => `$${value.toFixed(2)}`,} )
-                , _react2.default.createElement(_recharts.Bar, { dataKey: "amount", fill: "#3B82F6", radius: [4, 4, 0, 0],} )
-              )
-            )
-          )
-        )
-      )
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={timeData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="date" tick={{fontSize: 12}} />
+                <YAxis tick={{fontSize: 12}} width={40} />
+                <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+                <Bar dataKey="amount" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+      </div>
 
-      , _react2.default.createElement('div', { className: "bg-white p-4 rounded-xl shadow-sm"   ,}
-        , _react2.default.createElement('h3', { className: "font-bold text-gray-800 mb-3"  ,}, "Recent Expenses" )
-        , expenses.length === 0 ? (
-          _react2.default.createElement('p', { className: "text-sm text-gray-500 text-center py-4"   ,}, "No expenses recorded yet."   )
+      <div className="bg-white p-4 rounded-xl shadow-sm">
+        <h3 className="font-bold text-gray-800 mb-3">Recent Expenses</h3>
+        {expenses.length === 0 ? (
+          <p className="text-sm text-gray-500 text-center py-4">No expenses recorded yet.</p>
         ) : (
-          _react2.default.createElement('div', { className: "space-y-3",}
-            , [...expenses].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 10).map(e => (
-              _react2.default.createElement('div', { key: e.id, className: "flex justify-between items-center border-b border-gray-100 pb-2 last:border-0"      ,}
-                , _react2.default.createElement('div', null
-                  , _react2.default.createElement('p', { className: "font-medium text-gray-800" ,}, e.category)
-                  , _react2.default.createElement('p', { className: "text-xs text-gray-500" ,}, e.date, " " , e.description && `- ${e.description}`)
-                )
-                , _react2.default.createElement('div', { className: "flex items-center space-x-3"  ,}
-                  , _react2.default.createElement('span', { className: "font-semibold text-gray-800" ,}, "$", e.amount.toFixed(2))
-                  , _react2.default.createElement('button', { onClick: () => onDelete(e.id), className: "text-red-400 hover:text-red-600" ,}
-                    , _react2.default.createElement(_lucidereact.Trash2, { size: 18,} )
-                  )
-                )
-              )
-            ))
-          )
-        )
-      )
-    )
+          <div className="space-y-3">
+            {[...expenses].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 10).map(e => (
+              <div key={e.id} className="flex justify-between items-center border-b border-gray-100 pb-2 last:border-0">
+                <div>
+                  <p className="font-medium text-gray-800">{e.category}</p>
+                  <p className="text-xs text-gray-500">{e.date} {e.description && `- ${e.description}`}</p>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className="font-semibold text-gray-800">${e.amount.toFixed(2)}</span>
+                  <button onClick={() => onDelete(e.id)} className="text-red-400 hover:text-red-600">
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
 // --- DATA VIEW (IMPORT / EXPORT) ---
 function DataView({ expenses, onImport }) {
-  const [mode, setMode] = _react.useState.call(void 0, 'export'); // 'export' or 'import'
+  const [mode, setMode] = useState('export'); // 'export' or 'import'
 
   return (
-    _react2.default.createElement('div', { className: "space-y-4",}
-      , _react2.default.createElement('div', { className: "bg-white p-2 rounded-xl shadow-sm flex space-x-2"     ,}
-        , _react2.default.createElement('button', {
-          onClick: () => setMode('export'),
-          className: `flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${mode === 'export' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`,}
-, "Export Data"
+    <div className="space-y-4">
+      <div className="bg-white p-2 rounded-xl shadow-sm flex space-x-2">
+        <button
+          onClick={() => setMode('export')}
+          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${mode === 'export' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}
+        >
+          Export Data
+        </button>
+        <button
+          onClick={() => setMode('import')}
+          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${mode === 'import' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}
+        >
+          Import Data
+        </button>
+      </div>
 
-        )
-        , _react2.default.createElement('button', {
-          onClick: () => setMode('import'),
-          className: `flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${mode === 'import' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`,}
-, "Import Data"
-
-        )
-      )
-
-      , mode === 'export' ? _react2.default.createElement(ExportModule, { expenses: expenses,} ) : _react2.default.createElement(ImportModule, { onImport: onImport,} )
-    )
+      {mode === 'export' ? <ExportModule expenses={expenses} /> : <ImportModule onImport={onImport} />}
+    </div>
   );
 }
 
@@ -419,30 +409,30 @@ function ExportModule({ expenses }) {
   };
 
   return (
-    _react2.default.createElement('div', { className: "bg-white p-6 rounded-xl shadow-sm text-center space-y-4"     ,}
-      , _react2.default.createElement('div', { className: "bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto text-blue-600 mb-2"         ,}
-        , _react2.default.createElement(_lucidereact.Download, { size: 32,} )
-      )
-      , _react2.default.createElement('h2', { className: "text-xl font-bold text-gray-800"  ,}, "Export Your Data"  )
-      , _react2.default.createElement('p', { className: "text-sm text-gray-500" ,}, "Download all your recorded expenses as a CSV file, which can be easily opened in Microsoft Excel or Google Sheets."
-
-      )
-      , _react2.default.createElement('button', { 
-        onClick: exportCSV,
-        className: "w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition-colors mt-4"        ,}
-, "Download CSV"
-
-      )
-    )
+    <div className="bg-white p-6 rounded-xl shadow-sm text-center space-y-4">
+      <div className="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto text-blue-600 mb-2">
+        <Download size={32} />
+      </div>
+      <h2 className="text-xl font-bold text-gray-800">Export Your Data</h2>
+      <p className="text-sm text-gray-500">
+        Download all your recorded expenses as a CSV file, which can be easily opened in Microsoft Excel or Google Sheets.
+      </p>
+      <button 
+        onClick={exportCSV}
+        className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition-colors mt-4"
+      >
+        Download CSV
+      </button>
+    </div>
   );
 }
 
 function ImportModule({ onImport }) {
-  const [csvData, setCsvData] = _react.useState.call(void 0, []);
-  const [hasHeader, setHasHeader] = _react.useState.call(void 0, true);
-  const [dateFormat, setDateFormat] = _react.useState.call(void 0, 'MM/DD/YYYY');
-  const [columnMapping, setColumnMapping] = _react.useState.call(void 0, []);
-  const [parsedRecords, setParsedRecords] = _react.useState.call(void 0, []);
+  const [csvData, setCsvData] = useState([]);
+  const [hasHeader, setHasHeader] = useState(true);
+  const [dateFormat, setDateFormat] = useState('MM/DD/YYYY');
+  const [columnMapping, setColumnMapping] = useState([]);
+  const [parsedRecords, setParsedRecords] = useState([]);
 
   // Basic CSV Parser
   const parseCSV = (text) => {
@@ -492,7 +482,6 @@ function ImportModule({ onImport }) {
       const data = parseCSV(text);
       setCsvData(data);
       
-      // Auto-guess mapping if possible
       if (data.length > 0) {
         const defaultMapping = data[0].map(() => 'ignore');
         setColumnMapping(defaultMapping);
@@ -528,8 +517,7 @@ function ImportModule({ onImport }) {
     return `${y}-${m.toString().padStart(2, '0')}-${dayInt.toString().padStart(2, '0')}`;
   };
 
-  // Process data whenever mapping or settings change
-  _react.useEffect.call(void 0, () => {
+  useEffect(() => {
     if (csvData.length === 0) return;
     
     const records = [];
@@ -556,9 +544,7 @@ function ImportModule({ onImport }) {
         }
       });
 
-      // Require at least date and amount to be valid
       if (!record.date || record.amount === 0) record.isValid = false;
-      
       records.push(record);
     }
     
@@ -578,127 +564,127 @@ function ImportModule({ onImport }) {
       return;
     }
     onImport(validRecords);
-    setCsvData([]); // Reset after import
+    setCsvData([]);
   };
 
   if (csvData.length === 0) {
     return (
-      _react2.default.createElement('div', { className: "bg-white p-6 rounded-xl shadow-sm text-center space-y-4"     ,}
-        , _react2.default.createElement('div', { className: "bg-green-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto text-green-600 mb-2"         ,}
-          , _react2.default.createElement(_lucidereact.Upload, { size: 32,} )
-        )
-        , _react2.default.createElement('h2', { className: "text-xl font-bold text-gray-800"  ,}, "Import Old Data"  )
-        , _react2.default.createElement('p', { className: "text-sm text-gray-500" ,}, "Upload a CSV file containing your historical expenses. You'll be able to map the columns and preview the data before importing."
-
-        )
-        , _react2.default.createElement('label', { className: "w-full bg-green-600 text-white font-semibold py-3 rounded-lg hover:bg-green-700 transition-colors mt-4 cursor-pointer block"          ,}, "Select CSV File"
-
-          , _react2.default.createElement('input', { type: "file", accept: ".csv", className: "hidden", onChange: handleFileUpload,} )
-        )
-      )
+      <div className="bg-white p-6 rounded-xl shadow-sm text-center space-y-4">
+        <div className="bg-green-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto text-green-600 mb-2">
+          <Upload size={32} />
+        </div>
+        <h2 className="text-xl font-bold text-gray-800">Import Old Data</h2>
+        <p className="text-sm text-gray-500">
+          Upload a CSV file containing your historical expenses. You'll be able to map the columns and preview the data before importing.
+        </p>
+        <label className="w-full bg-green-600 text-white font-semibold py-3 rounded-lg hover:bg-green-700 transition-colors mt-4 cursor-pointer block">
+          Select CSV File
+          <input type="file" accept=".csv" className="hidden" onChange={handleFileUpload} />
+        </label>
+      </div>
     );
   }
 
   const validCount = parsedRecords.filter(r => r.isValid).length;
 
   return (
-    _react2.default.createElement('div', { className: "space-y-4",}
-      , _react2.default.createElement('div', { className: "bg-white p-4 rounded-xl shadow-sm space-y-4"    ,}
-        , _react2.default.createElement('h3', { className: "font-bold text-gray-800" ,}, "1. Setup & Mapping"   )
+    <div className="space-y-4">
+      <div className="bg-white p-4 rounded-xl shadow-sm space-y-4">
+        <h3 className="font-bold text-gray-800">1. Setup & Mapping</h3>
 
-        , _react2.default.createElement('div', { className: "flex flex-col space-y-3"  ,}
-          , _react2.default.createElement('label', { className: "flex items-center space-x-2 text-sm text-gray-700"    ,}
-            , _react2.default.createElement('input', { type: "checkbox", checked: hasHeader, onChange: (e) => setHasHeader(e.target.checked), className: "rounded text-blue-600" ,} )
-            , _react2.default.createElement('span', null, "First row contains column headers"    )
-          )
+        <div className="flex flex-col space-y-3">
+          <label className="flex items-center space-x-2 text-sm text-gray-700">
+            <input type="checkbox" checked={hasHeader} onChange={(e) => setHasHeader(e.target.checked)} className="rounded text-blue-600" />
+            <span>First row contains column headers</span>
+          </label>
 
-          , _react2.default.createElement('div', null
-            , _react2.default.createElement('label', { className: "block text-sm font-medium text-gray-700 mb-1"    ,}, "Date Format in CSV"   )
-            , _react2.default.createElement('select', { 
-              value: dateFormat, 
-              onChange: (e) => setDateFormat(e.target.value),
-              className: "w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"        ,}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Date Format in CSV</label>
+            <select 
+              value={dateFormat} 
+              onChange={(e) => setDateFormat(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+            >
+              <option value="MM/DD/YYYY">MM/DD/YYYY (e.g., 12/31/2024)</option>
+              <option value="DD/MM/YYYY">DD/MM/YYYY (e.g., 31/12/2024)</option>
+              <option value="YYYY-MM-DD">YYYY-MM-DD (e.g., 2024-12-31)</option>
+            </select>
+          </div>
+        </div>
 
-              , _react2.default.createElement('option', { value: "MM/DD/YYYY",}, "MM/DD/YYYY (e.g., 12/31/2024)"  )
-              , _react2.default.createElement('option', { value: "DD/MM/YYYY",}, "DD/MM/YYYY (e.g., 31/12/2024)"  )
-              , _react2.default.createElement('option', { value: "YYYY-MM-DD",}, "YYYY-MM-DD (e.g., 2024-12-31)"  )
-            )
-          )
-        )
+        <div className="overflow-x-auto border rounded-lg">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-gray-50">
+              <tr>
+                {columnMapping.map((mapping, i) => (
+                  <th key={i} className="p-2 border-b min-w-[120px]">
+                    <select 
+                      value={mapping}
+                      onChange={(e) => handleMappingChange(i, e.target.value)}
+                      className="w-full p-1 border border-gray-300 rounded text-xs"
+                    >
+                      <option value="ignore">-- Ignore --</option>
+                      <option value="date">Date</option>
+                      <option value="category">Category</option>
+                      <option value="description">Description</option>
+                      <option value="amount">Amount ($)</option>
+                    </select>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {csvData.slice(0, 3).map((row, rowIndex) => (
+                <tr key={rowIndex} className={hasHeader && rowIndex === 0 ? "bg-gray-100 text-gray-500 italic" : ""}>
+                  {row.map((cell, cellIndex) => (
+                    <td key={cellIndex} className="p-2 border-b truncate max-w-[150px]" title={cell}>
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-xs text-gray-500">Showing first 3 rows of {csvData.length} total rows.</p>
+      </div>
 
-        , _react2.default.createElement('div', { className: "overflow-x-auto border rounded-lg"  ,}
-          , _react2.default.createElement('table', { className: "w-full text-sm text-left"  ,}
-            , _react2.default.createElement('thead', { className: "bg-gray-50",}
-              , _react2.default.createElement('tr', null
-                , columnMapping.map((mapping, i) => (
-                  _react2.default.createElement('th', { key: i, className: "p-2 border-b min-w-[120px]"  ,}
-                    , _react2.default.createElement('select', { 
-                      value: mapping,
-                      onChange: (e) => handleMappingChange(i, e.target.value),
-                      className: "w-full p-1 border border-gray-300 rounded text-xs"     ,}
+      <div className="bg-white p-4 rounded-xl shadow-sm space-y-4">
+        <h3 className="font-bold text-gray-800">2. Preview & Import</h3>
 
-                      , _react2.default.createElement('option', { value: "ignore",}, "-- Ignore --"  )
-                      , _react2.default.createElement('option', { value: "date",}, "Date")
-                      , _react2.default.createElement('option', { value: "category",}, "Category")
-                      , _react2.default.createElement('option', { value: "description",}, "Description")
-                      , _react2.default.createElement('option', { value: "amount",}, "Amount ($)" )
-                    )
-                  )
-                ))
-              )
-            )
-            , _react2.default.createElement('tbody', null
-              , csvData.slice(0, 3).map((row, rowIndex) => (
-                _react2.default.createElement('tr', { key: rowIndex, className: hasHeader && rowIndex === 0 ? "bg-gray-100 text-gray-500 italic" : "",}
-                  , row.map((cell, cellIndex) => (
-                    _react2.default.createElement('td', { key: cellIndex, className: "p-2 border-b truncate max-w-[150px]"   , title: cell,}
-                      , cell
-                    )
-                  ))
-                )
-              ))
-            )
-          )
-        )
-        , _react2.default.createElement('p', { className: "text-xs text-gray-500" ,}, "Showing first 3 rows of "     , csvData.length, " total rows."  )
-      )
+        <div className="bg-blue-50 p-3 rounded-lg flex items-start space-x-3">
+          <AlertCircle className="text-blue-600 mt-0.5 shrink-0" size={18} />
+          <div className="text-sm text-blue-800">
+            <p className="font-semibold">Ready to import {validCount} valid records.</p>
+            {parsedRecords.length - validCount > 0 && (
+              <p className="text-red-600 mt-1">{parsedRecords.length - validCount} records have errors (missing date/amount) and will be skipped.</p>
+            )}
+          </div>
+        </div>
 
-      , _react2.default.createElement('div', { className: "bg-white p-4 rounded-xl shadow-sm space-y-4"    ,}
-        , _react2.default.createElement('h3', { className: "font-bold text-gray-800" ,}, "2. Preview & Import"   )
-
-        , _react2.default.createElement('div', { className: "bg-blue-50 p-3 rounded-lg flex items-start space-x-3"     ,}
-          , _react2.default.createElement(_lucidereact.AlertCircle, { className: "text-blue-600 mt-0.5 shrink-0"  , size: 18,} )
-          , _react2.default.createElement('div', { className: "text-sm text-blue-800" ,}
-            , _react2.default.createElement('p', { className: "font-semibold",}, "Ready to import "   , validCount, " valid records."  )
-            , parsedRecords.length - validCount > 0 && (
-              _react2.default.createElement('p', { className: "text-red-600 mt-1" ,}, parsedRecords.length - validCount, " records have errors (missing date/amount) and will be skipped."         )
-            )
-          )
-        )
-
-        , _react2.default.createElement('div', { className: "flex space-x-2" ,}
-          , _react2.default.createElement('button', { 
-            onClick: () => setCsvData([]),
-            className: "flex-1 bg-gray-200 text-gray-800 font-semibold py-3 rounded-lg hover:bg-gray-300 transition-colors"       ,}
-, "Cancel"
-
-          )
-          , _react2.default.createElement('button', { 
-            onClick: handleImport,
-            disabled: validCount === 0,
-            className: "flex-1 bg-green-600 text-white font-semibold py-3 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"         ,}
-, "Import "
-             , validCount, " Records"
-          )
-        )
-      )
-    )
+        <div className="flex space-x-2">
+          <button 
+            onClick={() => setCsvData([])}
+            className="flex-1 bg-gray-200 text-gray-800 font-semibold py-3 rounded-lg hover:bg-gray-300 transition-colors"
+          >
+            Cancel
+          </button>
+          <button 
+            onClick={handleImport}
+            disabled={validCount === 0}
+            className="flex-1 bg-green-600 text-white font-semibold py-3 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Import {validCount} Records
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
 // --- SETTINGS VIEW ---
 function SettingsView({ categories, onAddCategory, onDeleteCategory }) {
-  const [newCategory, setNewCategory] = _react.useState.call(void 0, '');
+  const [newCategory, setNewCategory] = useState('');
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -707,47 +693,42 @@ function SettingsView({ categories, onAddCategory, onDeleteCategory }) {
   };
 
   return (
-    _react2.default.createElement('div', { className: "space-y-4",}
-      , _react2.default.createElement('div', { className: "bg-white p-4 rounded-xl shadow-sm"   ,}
-        , _react2.default.createElement('h2', { className: "text-lg font-bold text-gray-800 mb-4"   ,}, "Manage Categories" )
+    <div className="space-y-4">
+      <div className="bg-white p-4 rounded-xl shadow-sm">
+        <h2 className="text-lg font-bold text-gray-800 mb-4">Manage Categories</h2>
 
-        , _react2.default.createElement('form', { onSubmit: handleAdd, className: "flex space-x-2 mb-6"  ,}
-          , _react2.default.createElement('input', { 
-            type: "text", 
-            placeholder: "New category name..."  , 
-            value: newCategory,
-            onChange: (e) => setNewCategory(e.target.value),
-            className: "flex-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"       ,}
-          )
-          , _react2.default.createElement('button', { 
-            type: "submit",
-            className: "bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center"        ,}
+        <form onSubmit={handleAdd} className="flex space-x-2 mb-6">
+          <input 
+            type="text" 
+            placeholder="New category name..." 
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+            className="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+          <button 
+            type="submit"
+            className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center"
+          >
+            <Plus size={24} />
+          </button>
+        </form>
 
-            , _react2.default.createElement(_lucidereact.Plus, { size: 24,} )
-          )
-        )
-
-        , _react2.default.createElement('div', { className: "space-y-2",}
-          , _react2.default.createElement('h3', { className: "text-sm font-medium text-gray-500 mb-2"   ,}, "Current Categories" )
-          , categories.map(cat => (
-            _react2.default.createElement('div', { key: cat, className: "flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-100"       ,}
-              , _react2.default.createElement('span', { className: "font-medium text-gray-700" ,}, cat)
-              , _react2.default.createElement('button', { 
-                onClick: () => onDeleteCategory(cat),
-                className: "text-red-400 hover:text-red-600 p-1"  ,
-                title: "Delete category" ,}
-
-                , _react2.default.createElement(_lucidereact.Trash2, { size: 18,} )
-              )
-            )
-          ))
-        )
-      )
-    )
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium text-gray-500 mb-2">Current Categories</h3>
+          {categories.map(cat => (
+            <div key={cat} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+              <span className="font-medium text-gray-700">{cat}</span>
+              <button 
+                onClick={() => onDeleteCategory(cat)}
+                className="text-red-400 hover:text-red-600 p-1"
+                title="Delete category"
+              >
+                <Trash2 size={18} />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
-</script></head>
-  <body>
-  
-
-<div id="preview-app"></div></body></html>
